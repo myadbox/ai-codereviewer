@@ -141,6 +141,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
     presence_penalty: 0,
   };
 
+  console.log("calling openai ...");
   try {
     const response = await openai.createChatCompletion({
       ...queryConfig,
