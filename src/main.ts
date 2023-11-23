@@ -151,7 +151,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
         },
       ],
     });
-
+    console.error("Errors in response:", response.data?.error);
     const res = response.data.choices[0].message?.content?.trim() || "[]";
     return JSON.parse(res);
   } catch (error) {
