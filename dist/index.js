@@ -172,6 +172,9 @@ function getAIResponse(prompt) {
             return JSON.parse(res);
         }
         catch (error) {
+            console.error("OPENAI_API_KEY:", OPENAI_API_KEY);
+            console.error("GITHUB_TOKEN:", GITHUB_TOKEN);
+            console.error("OPENAI_API_MODEL:", OPENAI_API_MODEL);
             console.error("Error stringified:", JSON.stringify(error));
             // console.error("Error:", error);
             return null;
