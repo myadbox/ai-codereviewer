@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import * as core from "@actions/core";
-import OpenAI from "openai";
+import { Configuration, OpenAIApi } from "openai";
 import { Octokit } from "@octokit/rest";
 import parseDiff, { Chunk, File } from "parse-diff";
 import minimatch from "minimatch";
@@ -11,13 +11,11 @@ const OPENAI_API_MODEL: string = core.getInput("OPENAI_API_MODEL");
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
-// const configuration = new Configuration({
-//   apiKey: OPENAI_API_KEY,
-// });
-
-const openai = new OpenAI({
+const configuration = new Configuration({
   apiKey: OPENAI_API_KEY,
 });
+
+const openai = new OpenAIApi(configuration);
 
 interface PRDetails {
   owner: string;
@@ -141,30 +139,23 @@ async function getAIResponse(prompt: string): Promise<Array<{
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
-    stream: false,
   };
 
   console.log("calling openai ...");
   try {
-    const response = await openai.chat.completions
-      .create({
-        ...queryConfig,
-        messages: [
-          {
-            role: "system",
-            content: prompt,
-          },
-        ],
-      })
-      .asResponse();
-    console.error("Response:", response);
-    const res = "[]"; //response.data.choices[0].message?.content?.trim() || "[]";
+    const response = await openai.createChatCompletion({
+      ...queryConfig,
+      messages: [
+        {
+          role: "system",
+          content: prompt,
+        },
+      ],
+    });
+    // console.error("Errors in response:", response.data?.error);
+    const res = response.data.choices[0].message?.content?.trim() || "[]";
     return JSON.parse(res);
   } catch (error) {
-    console.error("OPENAI_API_KEY:", OPENAI_API_KEY);
-    console.error("GITHUB_TOKEN:", GITHUB_TOKEN);
-    console.error("OPENAI_API_MODEL:", OPENAI_API_MODEL);
-    console.error("Error stringified:", JSON.stringify(error));
     console.error("Error:", error);
     return null;
   }
