@@ -172,7 +172,8 @@ function getAIResponse(prompt) {
             return JSON.parse(res);
         }
         catch (error) {
-            console.error("Error:", error);
+            console.error("Error stringified:", JSON.stringify(error));
+            // console.error("Error:", error);
             return null;
         }
     });
