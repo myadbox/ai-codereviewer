@@ -159,6 +159,7 @@ function getAIResponse(prompt) {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
+            stream: false,
         };
         console.log("calling openai ...");
         try {
@@ -166,12 +167,12 @@ function getAIResponse(prompt) {
                 .create(Object.assign(Object.assign({}, queryConfig), { messages: [
                     {
                         role: "system",
-                        content: "test",
+                        content: prompt,
                     },
                 ] }))
                 .asResponse();
-            console.error("Errors in response:", response);
-            const res = "[]"; // response.data.choices[0].message?.content?.trim() || "[]";
+            console.error("Response:", response);
+            const res = "[]"; //response.data.choices[0].message?.content?.trim() || "[]";
             return JSON.parse(res);
         }
         catch (error) {

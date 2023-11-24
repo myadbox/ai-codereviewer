@@ -141,6 +141,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
+    stream: false,
   };
 
   console.log("calling openai ...");
@@ -151,13 +152,13 @@ async function getAIResponse(prompt: string): Promise<Array<{
         messages: [
           {
             role: "system",
-            content: "test",
+            content: prompt,
           },
         ],
       })
       .asResponse();
-    console.error("Errors in response:", response);
-    const res = "[]"; // response.data.choices[0].message?.content?.trim() || "[]";
+    console.error("Response:", response);
+    const res = "[]"; //response.data.choices[0].message?.content?.trim() || "[]";
     return JSON.parse(res);
   } catch (error) {
     console.error("OPENAI_API_KEY:", OPENAI_API_KEY);
