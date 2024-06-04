@@ -241,6 +241,8 @@ async function main() {
     .getInput("exclude")
     .split(",")
     .map((s) => s.trim());
+  
+  console.log("Excluding patterns:", excludePatterns);
 
   const filteredDiff = parsedDiff.filter((file) => {
     return !excludePatterns.some((pattern) =>
