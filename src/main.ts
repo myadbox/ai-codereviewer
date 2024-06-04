@@ -8,7 +8,7 @@ import parseDiff, { Chunk, File } from "parse-diff";
 const GITHUB_TOKEN: string = core.getInput("GITHUB_TOKEN");
 const OPENAI_API_KEY: string = core.getInput("OPENAI_API_KEY");
 const OPENAI_API_MODEL: string = core.getInput("OPENAI_API_MODEL");
-const EXTRA_INSTRUCTIONS: string = core.getInput("EXTRA_INSTRUCTIONS");
+const EXTRA_INSTRUCTIONS: string = core.getInput("extra_instructions");
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
@@ -78,6 +78,7 @@ async function analyzeCode(
     if (file.to === "/dev/null") continue; // Ignore deleted files
     for (const chunk of file.chunks) {
       const prompt = createPrompt(file, chunk, prDetails);
+      console.log("Prompt:", prompt);
       const aiResponse = await getAIResponse(prompt);
       if (aiResponse) {
         const newComments = createComment(file, chunk, aiResponse);

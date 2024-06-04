@@ -11,7 +11,7 @@ inputs:
     description: "OpenAI API model."
     required: false
     default: "gpt-4o"
-  EXTRA_INSTRUCTIONS:
+  extra_instructions:
     description: "Extra instructions to be added to the text prompt."
     required: false
     default: ""
