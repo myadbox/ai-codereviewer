@@ -147,7 +147,7 @@ function getAIResponse(prompt) {
         };
         console.log("Calling OpenAI ...");
         try {
-            const response = yield openai.chat.completions.create(Object.assign(Object.assign(Object.assign({}, queryConfig), (OPENAI_API_MODEL === "gpt-4-1106-preview"
+            const response = yield openai.chat.completions.create(Object.assign(Object.assign(Object.assign({}, queryConfig), (OPENAI_API_MODEL.includes("gpt-4")
                 ? { response_format: { type: "json_object" } }
                 : {})), { messages: [
                     {
