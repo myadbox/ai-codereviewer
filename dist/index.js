@@ -1,23 +1,6 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 3947:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.debug = void 0;
-const debug = (message, ...args) => {
-    if (process.env.ACTIONS_RUNNER_DEBUG === "true") {
-        console.log(message, ...args);
-    }
-};
-exports.debug = debug;
-
-
-/***/ }),
-
 /***/ 3109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -65,7 +48,6 @@ const fs_1 = __nccwpck_require__(7147);
 const minimatch_1 = __importDefault(__nccwpck_require__(2002));
 const openai_1 = __importDefault(__nccwpck_require__(47));
 const parse_diff_1 = __importDefault(__nccwpck_require__(4833));
-const helper_1 = __nccwpck_require__(3947);
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
 const OPENAI_API_KEY = core.getInput("OPENAI_API_KEY");
 const OPENAI_API_MODEL = core.getInput("OPENAI_API_MODEL");
@@ -122,7 +104,7 @@ function analyzeCode(parsedDiff, prDetails) {
                 continue; // Ignore deleted files
             for (const chunk of file.chunks) {
                 const prompt = createPrompt(file, chunk, prDetails);
-                (0, helper_1.debug)("Prompt:", prompt);
+                core.debug(`Prompt: ${prompt}`);
                 const aiResponse = yield getAIResponse(prompt);
                 if (aiResponse) {
                     const newComments = createComment(file, chunk, aiResponse);
@@ -176,7 +158,7 @@ function getAIResponse(prompt) {
             frequency_penalty: 0,
             presence_penalty: 0,
         };
-        (0, helper_1.debug)("Calling OpenAI ...");
+        core.debug("Calling OpenAI ...");
         try {
             const response = yield openai.chat.completions.create(Object.assign(Object.assign(Object.assign({}, queryConfig), (SUPPORTS_JSON_FORMAT.includes(OPENAI_API_MODEL)
                 ? { response_format: { type: "json_object" } }
@@ -187,7 +169,7 @@ function getAIResponse(prompt) {
                     },
                 ] }));
             const res = ((_b = (_a = response.choices[0].message) === null || _a === void 0 ? void 0 : _a.content) === null || _b === void 0 ? void 0 : _b.trim()) || "{}";
-            (0, helper_1.debug)("Parsing response:", res);
+            core.debug(`Parsing response: ${res}`);
             return (_c = JSON.parse(res)) === null || _c === void 0 ? void 0 : _c.reviews;
         }
         catch (error) {
@@ -255,7 +237,7 @@ function main() {
             .getInput("exclude")
             .split(",")
             .map((s) => s.trim());
-        (0, helper_1.debug)("Excluding patterns:", excludePatterns);
+        core.debug(`Excluding patterns: ${excludePatterns}`);
         const filteredDiff = parsedDiff.filter((file) => {
             return !excludePatterns.some((pattern) => { var _a; return (0, minimatch_1.default)((_a = file.to) !== null && _a !== void 0 ? _a : "", pattern); });
         });

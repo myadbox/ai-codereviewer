@@ -4,7 +4,6 @@ import { readFileSync } from "fs";
 import minimatch from "minimatch";
 import OpenAI from "openai";
 import parseDiff, { Chunk, File } from "parse-diff";
-import { debug } from "./helper";
 
 const GITHUB_TOKEN: string = core.getInput("GITHUB_TOKEN");
 const OPENAI_API_KEY: string = core.getInput("OPENAI_API_KEY");
@@ -79,7 +78,7 @@ async function analyzeCode(
     if (file.to === "/dev/null") continue; // Ignore deleted files
     for (const chunk of file.chunks) {
       const prompt = createPrompt(file, chunk, prDetails);
-      debug("Prompt:", prompt);
+      core.debug(`Prompt: ${prompt}`);
       const aiResponse = await getAIResponse(prompt);
       if (aiResponse) {
         const newComments = createComment(file, chunk, aiResponse);
@@ -138,7 +137,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
     presence_penalty: 0,
   };
 
-  debug("Calling OpenAI ...");
+  core.debug("Calling OpenAI ...");
 
   try {
     const response = await openai.chat.completions.create({
@@ -156,7 +155,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
     });
 
     const res = response.choices[0].message?.content?.trim() || "{}";
-    debug("Parsing response:", res);
+    core.debug(`Parsing response: ${res}`);
     return JSON.parse(res)?.reviews;
   } catch (error) {
     console.error("Error:", error);
@@ -244,7 +243,7 @@ async function main() {
     .split(",")
     .map((s) => s.trim());
   
-  debug("Excluding patterns:", excludePatterns);
+  core.debug(`Excluding patterns: ${excludePatterns}`);
 
   const filteredDiff = parsedDiff.filter((file) => {
     return !excludePatterns.some((pattern) =>
