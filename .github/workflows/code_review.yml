@@ -4,9 +4,12 @@ on:
     types:
       - opened
       - synchronize
+      - reopened
+      - ready_for_review
 permissions: write-all
 jobs:
   code_review:
+    if: '! github.event.pull_request.draft'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

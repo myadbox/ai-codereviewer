@@ -4,6 +4,7 @@ import { readFileSync } from "fs";
 import minimatch from "minimatch";
 import OpenAI from "openai";
 import parseDiff, { Chunk, File } from "parse-diff";
+import { debug } from "./helper";
 
 const GITHUB_TOKEN: string = core.getInput("GITHUB_TOKEN");
 const OPENAI_API_KEY: string = core.getInput("OPENAI_API_KEY");
@@ -78,7 +79,7 @@ async function analyzeCode(
     if (file.to === "/dev/null") continue; // Ignore deleted files
     for (const chunk of file.chunks) {
       const prompt = createPrompt(file, chunk, prDetails);
-      console.log("Prompt:", prompt);
+      debug("Prompt:", prompt);
       const aiResponse = await getAIResponse(prompt);
       if (aiResponse) {
         const newComments = createComment(file, chunk, aiResponse);
@@ -137,7 +138,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
     presence_penalty: 0,
   };
 
-  console.log("Calling OpenAI ...");
+  debug("Calling OpenAI ...");
 
   try {
     const response = await openai.chat.completions.create({
@@ -155,7 +156,7 @@ async function getAIResponse(prompt: string): Promise<Array<{
     });
 
     const res = response.choices[0].message?.content?.trim() || "{}";
-    console.log("Parsing response:", res);
+    debug("Parsing response:", res);
     return JSON.parse(res)?.reviews;
   } catch (error) {
     console.error("Error:", error);
@@ -205,7 +206,7 @@ async function main() {
     readFileSync(process.env.GITHUB_EVENT_PATH ?? "", "utf8")
   );
 
-  if (eventData.action === "opened") {
+  if (eventData.action === "opened" || eventData.action === "reopened" || eventData.action === "ready_for_review") {
     diff = await getDiff(
       prDetails.owner,
       prDetails.repo,
@@ -227,7 +228,7 @@ async function main() {
 
     diff = String(response.data);
   } else {
-    console.log("Unsupported event:", process.env.GITHUB_EVENT_NAME);
+    console.log("Unsupported event:", `${process.env.GITHUB_EVENT_NAME}:${eventData.action}`);
     return;
   }
 
@@ -243,7 +244,7 @@ async function main() {
     .split(",")
     .map((s) => s.trim());
   
-  console.log("Excluding patterns:", excludePatterns);
+  debug("Excluding patterns:", excludePatterns);
 
   const filteredDiff = parsedDiff.filter((file) => {
     return !excludePatterns.some((pattern) =>
