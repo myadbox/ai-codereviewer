@@ -123,7 +123,8 @@ async function getAIResponse(prompt: string): Promise<Array<{
     presence_penalty: 0,
   };
 
-  console.log("calling openai ...");
+  console.log("Calling OpenAI ...");
+
   try {
     const response = await openai.chat.completions.create({
       ...queryConfig,
@@ -140,7 +141,8 @@ async function getAIResponse(prompt: string): Promise<Array<{
     });
 
     const res = response.choices[0].message?.content?.trim() || "{}";
-    return JSON.parse(res).reviews;
+    console.log("Parsing response:", res);
+    return JSON.parse(res)?.reviews;
   } catch (error) {
     console.error("Error:", error);
     return null;
