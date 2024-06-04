@@ -40,7 +40,7 @@ jobs:
       - name: AI Code Reviewer
         uses: your-username/ai-code-reviewer@main
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # The GITHUB_TOKEN is there by default so you just need to keep it like it is and not necessarily need to add it as secret as it will throw an error. [More Details](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#about-the-github_token-secret)
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_MODEL: "gpt-4" # Optional: defaults to "gpt-4"
           exclude: "**/*.json, **/*.md" # Optional: exclude patterns separated by commas
@@ -63,7 +63,7 @@ the OpenAI API. It then generates review comments based on the AI's response and
 Contributions are welcome! Please feel free to submit issues or pull requests to improve the AI Code Reviewer GitHub
 Action.
 
-Let the maintainer generate the final package.
+Let the maintainer generate the final package (`yarn build` & `yarn package`).
 
 ## License
 
